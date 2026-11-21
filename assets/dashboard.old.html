@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevDrive • Developer Workspace & Cloud Engine</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <style>
+        /* Zero External Dependencies - Native macOS SF Font Stack */
+        :root {
+            --bg: #07090e;
+            --panel: #0d111a;
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --card: #131824;
+            --card-hover: #182030;
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --brand: #38bdf8;
+            --brand-bg: rgba(56, 189, 248, 0.12);
+            --brand-border: rgba(56, 189, 248, 0.25);
+            --emerald: #10b981;
+            --emerald-bg: rgba(16, 185, 129, 0.12);
+            --emerald-border: rgba(16, 185, 129, 0.25);
+            --amber: #f59e0b;
+            --amber-bg: rgba(245, 158, 11, 0.12);
+            --amber-border: rgba(245, 158, 11, 0.25);
+            --rose: #f43f5e;
+            --rose-bg: rgba(244, 63, 94, 0.12);
+            --rose-border: rgba(244, 63, 94, 0.25);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        .mono {
+            font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35);
+        }
+
+        .brand-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-pill {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .badge-brand { background: var(--brand-bg); color: var(--brand); border: 1px solid var(--brand-border); }
+        .badge-emerald { background: var(--emerald-bg); color: var(--emerald); border: 1px solid var(--emerald-border); }
+        .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+        .badge-rose { background: var(--rose-bg); color: var(--rose); border: 1px solid var(--rose-border); }
+
+        .brand-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-main);
+            transition: background 0.15s ease, border-color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-subtle {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+        }
+        .btn-subtle:hover {
+            background: rgba(255, 255, 255, 0.09);
+            color: #fff;
+        }
+
+        .btn-primary {
+            background: #0284c7;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #0369a1; }
+
+        .btn-brand {
+            background: var(--brand);
+            color: #07090e;
+            font-weight: 700;
+        }
+        .btn-brand:hover { background: #7dd3fc; }
+
+        .btn-emerald {
+            background: var(--emerald-bg);
+            border-color: var(--emerald-border);
+            color: var(--emerald);
+        }
+        .btn-emerald:hover { background: rgba(16, 185, 129, 0.2); }
+
+        .btn-amber {
+            background: var(--amber-bg);
+            border-color: var(--amber-border);
+            color: var(--amber);
+        }
+        .btn-amber:hover { background: rgba(245, 158, 11, 0.2); }
+
+        .icon {
+            width: 15px;
+            height: 15px;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        /* Metrics Row */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-sub);
+            letter-spacing: 0.03em;
+        }
+
+        .metric-value-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .metric-main-val {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .metric-sub-val {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--brand);
+            border-radius: 999px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .metric-footer {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        /* Tabs Nav */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sub);
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: color 0.15s ease, background 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            color: var(--brand);
+            background: var(--brand-bg);
+            border-color: var(--brand-border);
+        }
+
+        /* Tab Views */
+        .tab-view {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tab-view.active {
+            display: flex;
+        }
+
+        /* Forms & Inputs */
+        .form-row {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .input-text {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            outline: none;
+            flex: 1;
+            min-width: 220px;
+            transition: border-color 0.15s ease;
+        }
+
+        .input-text:focus {
+            border-color: var(--brand);
+        }
+
+        /* Card Lists */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .item-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .item-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            max-width: 600px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Simulator split view */
+        .sim-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 14px;
+        }
+
+        .sim-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sim-box-title {
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sim-file-list {
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 11px;
+        }
+
+        .sim-file-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 4px 8px;
+            border-radius: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Settings box */
+        .settings-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .setting-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-main);
+        }
+
+        .setting-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            outline: none;
+            margin: 6px 0;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--brand);
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+        }
+        .modal-overlay.open, .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Toast notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            opacity: 1;
+            transition: opacity 0.25s ease;
+        }
+        .toast-success { border-color: var(--emerald-border); color: var(--emerald); }
+        .toast-error { border-color: var(--rose-border); color: var(--rose); }
+        .toast-info { border-color: var(--brand-border); color: var(--brand); }
+
+        /* Tree Drawer & Tech Badges */
+        .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .tree-drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .tree-drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .tree-drawer-panel {
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 500px;
+            max-width: 90vw;
+            background: #090e17;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tree-drawer-overlay.open .tree-drawer-panel {
+            transform: translateX(0);
+        }
+        .tree-drawer-header {
+            padding: 18px 20px 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.01);
+        }
+        .tree-drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+        }
+        .tree-drawer-footer {
+            padding: 14px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .tree-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 6px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.12s ease;
+            user-select: none;
+        }
+        .tree-item-row:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .tree-item-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .tree-item-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .tree-export-btn {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: -apple-system, sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .tree-item-row:hover .tree-export-btn {
+            opacity: 1;
+        }
+        .tree-children {
+            margin-left: 16px;
+            border-left: 1px dashed rgba(255, 255, 255, 0.08);
+            padding-left: 4px;
+        }
+        .tree-children.collapsed {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <!-- Top Navigation Bar -->
+        <header class="header">
+            <div class="brand-area">
+                <img src="/logo.svg" alt="DevDrive Logo" class="logo-img">
+                <div>
+                    <div class="brand-title">
+                        DevDrive
+                        <span class="badge-pill badge-brand mono">v0.1.0-release</span>
+                    </div>
+                    <div class="brand-desc">APFS Zero-Copy & 5 TB Cloud Workspace</div>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="badge-pill badge-emerald mono" style="padding: 6px 10px; display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--emerald);"></span>
+                    APFS Motoru Aktif
+                </div>
+                <button onclick="cleanCache()" class="btn btn-subtle" title="Önbelleği temizle">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>Önbelleği Boşalt</span>
+                </button>
+                <button onclick="forceRefreshAll()" class="btn btn-subtle" title="Yenile (⌘R)">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Metric Gauges (Hardware accelerated) -->
+        <section class="metrics-grid">
+            <!-- 1. Hot NVMe SSD Cache Card -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>● SICAK SSD ÖNBELLEĞİ (LRU)</span>
+                    <span id="cache-pct" class="mono" style="color: var(--brand);">0.0%</span>
+                </div>
+                <div class="metric-value-wrap">
+                    <span id="cache-used" class="metric-main-val mono">0 B</span>
+                    <span id="cache-max" class="metric-sub-val mono">/ 20.0 GB Sınır</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="cache-bar" class="progress-bar-fill"></div>
+                </div>
+                <div class="metric-footer">
+                    <span>APFS Zero-Copy Clone</span>
+                    <span class="mono">Kota Korumalı</span>
+                </div>
+            </div>
+
+            <!-- 2. Cloud Destination Card -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>● 5 TB GOOGLE DRIVE</span>
+                    <span class="mono" style="color: var(--emerald);">Bağlı ✓</span>
+                </div>
+                <div class="metric-value-wrap">
+                    <span id="cloud-used" class="metric-main-val mono">0 B</span>
+                    <span class="metric-sub-val" style="color: var(--emerald);">/ 5.00 TB Kapasite</span>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 6px;">
+                    <div id="cloud-path" class="mono" style="flex: 1; font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        Taranıyor...
+                    </div>
+                    <button onclick="revealRemote()" class="btn btn-subtle" style="padding: 4px 8px;" title="Finder'da Aç">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Shielded Junk / Reclaimable Card -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>● SSD'DEN AÇILABİLECEK ALAN</span>
+                    <span id="reclaimable-badge" class="mono" style="color: var(--amber);">Sınıf A</span>
+                </div>
+                <div class="metric-value-wrap">
+                    <span id="space-saved" class="metric-main-val mono">0 B</span>
+                    <span id="space-freed-sub" class="metric-sub-val" style="color: var(--emerald);">/ 0 B Tahliye Edildi</span>
+                </div>
+                <div class="metric-footer" style="margin-top: 8px;">
+                    <span>node_modules, target temizlenebilir</span>
+                    <span style="color: var(--emerald);" class="mono">✓ 7 Gün Karantina</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs (Instant In-Memory Switch) -->
+        <nav class="nav-tabs">
+            <button onclick="switchTab('workspaces')" id="tab-workspaces" class="tab-btn active">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                <span>Çalışma Alanları</span>
+            </button>
+            <button onclick="switchTab('timeline')" id="tab-timeline" class="tab-btn">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Zaman Makinesi</span>
+            </button>
+            <button onclick="switchTab('vault')" id="tab-vault" class="tab-btn">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>Kurtarma Kasası (.trash)</span>
+            </button>
+            <button onclick="switchTab('simulator')" id="tab-simulator" class="tab-btn">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <span>Kalkan Analizörü</span>
+            </button>
+            <button onclick="switchTab('restore')" id="tab-restore" class="tab-btn">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                <span>☁️ Drive Projeleri</span>
+            </button>
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Ayarlar</span>
+            </button>
+        </nav>
+
+        <!-- TAB 1: WORKSPACES -->
+        <main id="view-workspaces" class="tab-view active">
+            <div class="form-row">
+                <input type="text" id="new-proj-path" placeholder="Mac'indeki proje yolu" class="input-text mono">
+                <button onclick="pickFolder('new-proj-path', 'new-proj-name')" class="btn btn-subtle" title="Finder'dan Klasör Seç">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                    <span>Klasör Seç</span>
+                </button>
+                <input type="text" id="new-proj-name" placeholder="Proje takma adı (Opsiyonel)" class="input-text" style="max-width: 200px;">
+                <button onclick="addNewProject()" class="btn btn-brand">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    <span>Korumaya Al</span>
+                </button>
+                <button onclick="switchTab('restore')" class="btn btn-emerald" title="Drive'daki bir projeyi yeni bir yerel klasöre geri getir">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span>Drive'dan Restore</span>
+                </button>
+                <button onclick="removeAllProjects()" class="btn btn-subtle" style="color: var(--rose);" title="Tüm projeleri listeden kaldır (Yerel kodlarınız silinmez)">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>Tüm Listeyi Temizle</span>
+                </button>
+                <button onclick="purgeExpiredQuarantines()" class="btn btn-subtle" style="color: var(--amber);" title="7 günlük süresi dolmuş tüm karantinaları kalıcı olarak temizler">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>🗑️ Süresi Dolanları Temizle</span>
+                </button>
+            </div>
+            <div id="workspaces-list" class="card-list">
+                <div style="text-align: center; color: var(--text-muted); padding: 30px;">Projeler taranıyor...</div>
+            </div>
+        </main>
+
+        <!-- TAB 2: TIMELINE (SNAPSHOTS) -->
+        <main id="view-timeline" class="tab-view">
+            <div class="form-row" style="justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 700; color: #fff;">Zaman Makinesi (Snapshots)</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Git commit atmasan bile dilediğin ana sıfır kayıpla dön.</div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <select id="timeline-project-select" onchange="loadTimeline(true)" class="input-text mono" style="min-width: 180px;"></select>
+                    <button onclick="promptQuickSnapshot()" class="btn btn-primary">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Snapshot Al</span>
+                    </button>
+                </div>
+            </div>
+            <div id="timeline-list" class="card-list">
+                <div style="text-align: center; color: var(--text-muted); padding: 30px;">Geçmiş taranıyor...</div>
+            </div>
+        </main>
+
+        <!-- TAB 3: RECOVERY VAULT -->
+        <main id="view-vault" class="tab-view">
+            <div class="form-row" style="justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 700; color: #fff;">Sıfır Veri Kaybı: Kurtarma Kasası (.trash)</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Yerel projende silinen dosyalar bulutta zaman damgasıyla saklanır.</div>
+                </div>
+                <button onclick="loadVault(true)" class="btn btn-subtle">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Yenile</span>
+                </button>
+            </div>
+            <div id="vault-list" class="card-list">
+                <div style="text-align: center; color: var(--text-muted); padding: 30px;">Kasa taranıyor...</div>
+            </div>
+        </main>
+
+        <!-- TAB 4: SHIELD SIMULATOR -->
+        <main id="view-simulator" class="tab-view">
+            <div class="form-row">
+                <input type="text" id="sim-path" placeholder="Analiz edilecek dizin yolu" class="input-text mono">
+                <button onclick="pickFolder('sim-path')" class="btn btn-subtle" title="Finder'dan Klasör Seç">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                    <span>Klasör Seç</span>
+                </button>
+                <button onclick="runSimulator()" id="sim-btn" class="btn btn-primary">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Analiz Et</span>
+                </button>
+            </div>
+            <div id="sim-results" style="display: none; flex-direction: column; gap: 14px;"></div>
+        </main>
+
+        <!-- TAB 5: SETTINGS -->
+        <main id="view-settings" class="tab-view">
+            <div class="settings-card">
+                <div style="font-weight: 700; font-size: 14px; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">
+                    DevDrive Motor Yapılandırması
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label-row">
+                        <span>Maksimum Sıcak SSD Önbellek Kotası</span>
+                        <span id="cfg-cache-val" class="mono" style="color: var(--brand);">20 GB</span>
+                    </div>
+                    <input type="range" id="cfg-cache" min="5" max="60" step="5" value="20" oninput="document.getElementById('cfg-cache-val').innerText = this.value + ' GB'">
+                    <span class="setting-desc">256 GB Mac SSD'sinin dolmasını engellemek için tavan CAS kotası.</span>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label-row">
+                        <span>FSEvents Birleştirme (Debounce) Gecikmesi</span>
+                        <span id="cfg-debounce-val" class="mono" style="color: var(--brand);">500 ms</span>
+                    </div>
+                    <input type="range" id="cfg-debounce" min="100" max="2000" step="100" value="500" oninput="document.getElementById('cfg-debounce-val').innerText = this.value + ' ms'">
+                    <span class="setting-desc">Google Drive API kotalarını korumak için yazma olaylarını paketleme süresi.</span>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label-row">
+                        <span>Google Drive Hesabı (Otomatik Tespit)</span>
+                        <span id="drive-health-badge" class="badge-pill badge-emerald mono">Doğrulandı ✓</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+                        <select id="drive-account-select" onchange="onAccountSelectChange()" class="input-text mono" style="flex: 1; min-width: 240px;"></select>
+                        <button onclick="testDriveConnection()" id="test-drive-btn" class="btn btn-emerald">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <span>Bağlantıyı Test Et</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label-row">
+                        <span>Google Drive Kök Hedef Dizini</span>
+                        <span class="setting-desc">veya farklı bir Drive klasörü seçin</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+                        <input type="text" id="cfg-remote" class="input-text mono" style="flex: 1; min-width: 240px;">
+                        <button onclick="pickFolder('cfg-remote', null, 'Google Drive Hedef Klasörünü Seçin:')" class="btn btn-subtle">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                            <span>Drive'dan Seç</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 12px;">Eşitleme Öncesi Otomatik Snapshot</div>
+                        <div class="setting-desc">Her sync öncesi projenin son halini CAS deposuna kopyalar.</div>
+                    </div>
+                    <input type="checkbox" id="cfg-autosnap" checked style="width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer;">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; padding-top: 10px; border-top: 1px solid var(--panel-border);">
+                    <button onclick="saveSettings()" class="btn btn-emerald">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        <span>Ayarları Kaydet</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 6: CLOUD DRIVE PROJECTS -->
+        <main id="view-restore" class="tab-view">
+            <div class="content-header" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="font-size: 15px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        <span>☁️ Google Drive'daki Yedek Projeleriniz</span>
+                    </h2>
+                    <p class="setting-desc" style="margin-top: 2px;">Google Drive'da bulunan projeler. İstediklerinizi tek tıkla Mac'inize indirip hemen korumaya alabilirsiniz.</p>
+                </div>
+                <button onclick="loadRemoteProjects(true)" class="btn btn-subtle" title="Drive'ı yeniden tara">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Drive'ı Yenile & Tara</span>
+                </button>
+            </div>
+
+            <div id="remote-projects-list" class="card-list">
+                <div style="text-align: center; color: var(--text-muted); padding: 30px;">Drive projeleri taranıyor...</div>
+            </div>
+
+            <!-- Restore Results & Hints -->
+            <div id="restore-result-box" style="display: none; margin-top: 16px; padding: 14px; background: rgba(56, 189, 248, 0.06); border: 1px solid var(--brand-border); border-radius: 12px;">
+                <div style="font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+                    <span style="color: var(--emerald);">✓</span>
+                    <span id="restore-res-title">Geri getirme tamamlandı</span>
+                </div>
+                <div id="restore-res-stats" class="mono" style="font-size: 11px; color: var(--text-sub); margin-top: 4px;"></div>
+                <div id="restore-res-hints" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Snapshot Modal -->
+    <div id="snapshot-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; color: #fff;">Yeni Snapshot Al</span>
+                <button onclick="closeSnapshotModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px;">✕</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted);">Projenin durumunu SHA-256 içerik adresli depoya dondur.</div>
+            <input type="hidden" id="snap-target-path">
+            <input type="text" id="snap-message-input" placeholder="Snapshot notu (örn: Refactor öncesi durum)" class="input-text" style="width: 100%;">
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
+                <button onclick="closeSnapshotModal()" class="btn btn-subtle">İptal</button>
+                <button onclick="submitSnapshot()" class="btn btn-brand">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Restore Modal -->
+    <div id="quick-restore-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 520px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; color: #fff;" id="modal-restore-title">Projeyi Mac'e İndir</span>
+                <button onclick="closeQuickRestoreModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px;">✕</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Google Drive'daki temiz kaynak dosyaları yerel klasöre indirilir ve otomatik korumaya alınır.</div>
+            <input type="hidden" id="modal-restore-remote-name">
+            <div style="margin-top: 14px;">
+                <label style="font-size: 11px; font-weight: 600; color: var(--text-sub);">İndirilecek Yerel Konum:</label>
+                <div style="display: flex; gap: 8px; margin-top: 4px;">
+                    <input type="text" id="modal-restore-target-path" class="input-text mono" style="flex: 1;">
+                    <button onclick="pickFolder('modal-restore-target-path')" class="btn btn-subtle" title="Finder'dan Klasör Seç">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                        <span>Klasör Seç</span>
+                    </button>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+                <span style="font-size: 11px; color: var(--text-muted);">Mevcut klasör varsa üzerine yaz (--force)</span>
+                <input type="checkbox" id="modal-restore-force" style="accent-color: var(--brand);">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+                <button onclick="closeQuickRestoreModal()" class="btn btn-subtle">İptal</button>
+                <button onclick="submitQuickRestore()" id="btn-submit-quick-restore" class="btn btn-brand">İndir & Korumaya Al</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom DevDrive Confirm & Alert Modal (WebKit / Tauri Native Compatible) -->
+    <div id="confirm-modal" class="modal-overlay" style="z-index: 9999;">
+        <div class="modal-content" style="max-width: 480px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.12);">
+            <div style="display: flex; gap: 14px; align-items: flex-start;">
+                <div id="confirm-icon" style="font-size: 26px; line-height: 1; flex-shrink: 0; padding-top: 2px;">⚠️</div>
+                <div style="flex: 1; overflow: hidden;">
+                    <div id="confirm-title" style="font-weight: 700; color: #fff; font-size: 15px; margin-bottom: 8px;">Onay Gerekiyor</div>
+                    <div id="confirm-message" style="font-size: 12.5px; color: var(--text-sub); line-height: 1.55; white-space: pre-line; word-break: break-word; max-height: 360px; overflow-y: auto;"></div>
+                </div>
+            </div>
+            <div id="confirm-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+                <button id="confirm-cancel-btn" class="btn btn-subtle">Vazgeç</button>
+                <button id="confirm-ok-btn" class="btn btn-brand">Onayla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Tree Viewer Drawer -->
+    <div id="tree-drawer" class="tree-drawer-overlay" onclick="if(event.target === this) closeTreeViewer()">
+        <div class="tree-drawer-panel">
+            <div class="tree-drawer-header">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">📂</span>
+                        <div>
+                            <div id="tree-project-title" style="font-weight: 700; color: #fff; font-size: 15px;">Proje Dosyaları</div>
+                            <div id="tree-project-stats" class="mono" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Yükleniyor...</div>
+                        </div>
+                    </div>
+                    <button onclick="closeTreeViewer()" class="btn btn-subtle" style="padding: 4px 8px; font-size: 14px;">✕</button>
+                </div>
+                <div style="margin-top: 12px; position: relative;">
+                    <input type="text" id="tree-search-input" oninput="filterTreeNodes()" placeholder="Dosya veya klasör filtrele..." class="input-text" style="width: 100%; padding-left: 28px; font-size: 12px;">
+                    <span style="position: absolute; left: 9px; top: 8px; font-size: 12px; opacity: 0.5;">🔍</span>
+                </div>
+            </div>
+
+            <div id="tree-content" class="tree-drawer-content">
+                <div style="text-align: center; color: var(--text-muted); padding: 40px;">Dosya ağacı yükleniyor...</div>
+            </div>
+
+            <div class="tree-drawer-footer">
+                <button onclick="exportSubfolder(currentTreeProjectId, '', currentTreeProjectName)" class="btn btn-brand" style="width: 100%; justify-content: center;">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span>Tüm Temiz Kaynakları Dışa Aktar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+
+    <script>
+        // High-Performance State (Zero Frame Drop)
+        let currentProjects = [];
+        let globalConfig = null;
+        let tabCache = {
+            timeline: false,
+            vault: false,
+            settings: false,
+            restore: false
+        };
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span><span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 250);
+            }, 3000);
+        }
+
+        // 0 ms Instant In-Memory Tab Switching
+        function switchTab(tabId) {
+            const activeView = document.querySelector('.tab-view.active');
+            if (activeView) activeView.classList.remove('active');
+
+            const targetView = document.getElementById('view-' + tabId);
+            if (targetView) targetView.classList.add('active');
+
+            const activeBtn = document.querySelector('.tab-btn.active');
+            if (activeBtn) activeBtn.classList.remove('active');
+
+            const targetBtn = document.getElementById('tab-' + tabId);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            // Lazy fetch on first view only
+            if (tabId === 'timeline' && !tabCache.timeline) loadTimeline();
+            if (tabId === 'vault' && !tabCache.vault) loadVault();
+            if (tabId === 'settings' && !tabCache.settings) loadSettings();
+            if (tabId === 'restore') loadRemoteProjects(false);
+        }
+
+        async function loadAllData() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+
+                document.getElementById('cache-used').innerText = formatBytes(data.current_cache_bytes);
+                document.getElementById('cache-max').innerText = '/ ' + formatBytes(data.max_cache_bytes) + ' Sınır';
+                const pct = ((data.current_cache_bytes / data.max_cache_bytes) * 100).toFixed(1);
+                document.getElementById('cache-pct').innerText = pct + '%';
+                document.getElementById('cache-bar').style.width = Math.min(pct, 100) + '%';
+                
+                document.getElementById('cloud-used').innerText = formatBytes(data.remote_used_bytes || 0);
+                document.getElementById('cloud-path').innerText = data.remote_drive_path;
+                document.getElementById('cloud-path').title = data.remote_drive_path;
+
+                document.getElementById('space-saved').innerText = formatBytes(data.total_reclaimable_bytes || 0);
+                if (document.getElementById('space-freed-sub')) {
+                    document.getElementById('space-freed-sub').innerText = '/ ' + formatBytes(data.total_space_saved_bytes || 0) + ' Tahliye Edildi';
+                }
+
+                currentProjects = data.projects || [];
+                renderWorkspaces(currentProjects);
+                populateProjectSelects(currentProjects);
+
+                if (currentProjects.length > 0 && !document.getElementById('sim-path').value) {
+                    document.getElementById('sim-path').value = currentProjects[0].local_path;
+                }
+
+                if (currentProjects.some(p => p.sync_status === 'syncing')) {
+                    setTimeout(loadAllData, 600);
+                }
+            } catch (err) {
+                showToast('Veriler yüklenirken hata oluştu', 'error');
+            }
+        }
+
+        function populateProjectSelects(projects) {
+            const select = document.getElementById('timeline-project-select');
+            if (!select) return;
+            select.innerHTML = projects.map(p => `<option value="${p.local_path}">${p.name}</option>`).join('');
+        }
+
+        function renderWorkspaces(projects) {
+            const container = document.getElementById('workspaces-list');
+            if (!projects || projects.length === 0) {
+                container.innerHTML = `
+                    <div style="background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 32px; text-align: center;">
+                        <div style="font-weight: 700; color: #fff;">Henüz koruma altına alınmış bir yerel proje yok</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Yukarıdan yeni bir proje yolu girebilir veya Drive'daki yedeklerinizi görüntüleyebilirsiniz:</div>
+                        <button onclick="switchTab('restore')" class="btn btn-emerald" style="margin-top: 14px;">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                            <span>☁️ Drive'daki Projeleri Görüntüle</span>
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = projects.map(p => {
+                let badgeClass = 'badge-emerald';
+                let dotColor = 'var(--emerald)';
+                let statusLabel = 'Tam Senkronize';
+                let actionBtnClass = 'btn-emerald';
+                let actionBtnText = 'Eşitle';
+                let progressBarHtml = '';
+                const isArchived = p.project_status === 'archived' || p.project_status === 'purged';
+
+                if (p.project_status === 'archived') {
+                    if (p.quarantine_path) {
+                        badgeClass = 'badge-amber';
+                        dotColor = 'var(--amber)';
+                        const days = p.quarantine_days_left != null ? p.quarantine_days_left : 7;
+                        statusLabel = `🗑️ Karantinada (${days} gün kaldı)`;
+                    } else {
+                        badgeClass = 'badge-brand';
+                        dotColor = 'var(--brand)';
+                        statusLabel = '💤 Bulutta Uyuyor';
+                    }
+                } else if (p.project_status === 'purged') {
+                    badgeClass = 'badge-brand';
+                    dotColor = 'var(--brand)';
+                    statusLabel = '💤 Bulutta Uyuyor';
+                } else if (p.project_status === 'archiving') {
+                    badgeClass = 'badge-amber';
+                    dotColor = 'var(--amber)';
+                    statusLabel = '🟡 Arşivleniyor...';
+                } else if (p.sync_status === 'syncing') {
+                    const pct = p.progress ? p.progress.percent : 0;
+                    badgeClass = 'badge-brand';
+                    dotColor = 'var(--brand)';
+                    statusLabel = `Eşitleniyor... %${pct}`;
+                    actionBtnClass = 'btn-brand';
+                    actionBtnText = 'Eşitleniyor...';
+                    progressBarHtml = `
+                        <div style="background: rgba(56, 189, 248, 0.15); height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; position: relative;">
+                            <div style="background: var(--brand); width: ${pct}%; height: 100%; transition: width 0.2s ease; box-shadow: 0 0 8px var(--brand);"></div>
+                        </div>
+                    `;
+                } else if (p.sync_status === 'needs_sync') {
+                    badgeClass = 'badge-amber';
+                    dotColor = 'var(--amber)';
+                    statusLabel = p.remote_file_count === 0 ? 'Drive Boş (Eşitleme Gerekli)' : 'Eşitleme Bekliyor';
+                    actionBtnClass = 'btn-amber';
+                    actionBtnText = 'Şimdi Eşitle';
+                } else if (p.sync_status === 'missing_remote') {
+                    badgeClass = 'badge-rose';
+                    dotColor = 'var(--rose)';
+                    statusLabel = 'Drive Bağlantısı Yok';
+                    actionBtnClass = 'btn-subtle';
+                } else if (p.sync_status === 'missing_local') {
+                    badgeClass = 'badge-rose';
+                    dotColor = 'var(--rose)';
+                    statusLabel = 'Yerel Dizin Yok';
+                    actionBtnClass = 'btn-subtle';
+                }
+
+                const statusDetail = p.status_message ? `
+                    <div style="font-size: 11px; margin-top: 4px; color: ${dotColor}; display: flex; align-items: center; gap: 5px;">
+                        <span>${isArchived ? (p.quarantine_path ? '🗑️' : '💤') : (p.sync_status === 'syncing' ? '🔄' : (p.sync_status === 'needs_sync' ? '⚠️' : (p.sync_status === 'synced' ? '✓' : '✖')))}</span>
+                        <span>${p.status_message}</span>
+                    </div>` : '';
+
+                const safePath = (p.local_path || '').replace(/'/g, "\\'");
+                const safeName = (p.name || '').replace(/'/g, "\\'");
+
+                const techBadgesHtml = (p.tech_badges && p.tech_badges.length > 0) ? `
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
+                        ${p.tech_badges.map(t => {
+                            let icon = '💻';
+                            let color = 'rgba(59, 130, 246, 0.15)';
+                            let border = 'rgba(59, 130, 246, 0.3)';
+                            let textCol = '#93c5fd';
+                            if (t === 'Rust') { icon = '🦀'; color = 'rgba(249, 115, 22, 0.15)'; border = 'rgba(249, 115, 22, 0.3)'; textCol = '#fdba74'; }
+                            else if (t === 'Flutter') { icon = '📱'; color = 'rgba(6, 182, 212, 0.15)'; border = 'rgba(6, 182, 212, 0.3)'; textCol = '#67e8f9'; }
+                            else if (t === 'Node.js') { icon = '⚡'; color = 'rgba(234, 179, 8, 0.15)'; border = 'rgba(234, 179, 8, 0.3)'; textCol = '#fde047'; }
+                            else if (t === 'Python') { icon = '🐍'; color = 'rgba(34, 197, 94, 0.15)'; border = 'rgba(34, 197, 94, 0.3)'; textCol = '#86efac'; }
+                            else if (t === 'Go') { icon = '🐹'; color = 'rgba(14, 165, 233, 0.15)'; border = 'rgba(14, 165, 233, 0.3)'; textCol = '#7dd3fc'; }
+                            return `<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 7px; border-radius: 6px; background: ${color}; border: 1px solid ${border}; color: ${textCol}; font-weight: 500;">${icon} ${t}</span>`;
+                        }).join('')}
+                    </div>
+                ` : '';
+
+                let actionButtonsHtml = '';
+                if (isArchived) {
+                    actionButtonsHtml = `
+                        <button onclick="openTreeViewer('${p.id}', '${safeName}', true)" class="btn btn-subtle" title="Arşivdeki Dosya Ağacını Gör (Gezgin)">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                            <span>Dosyalar</span>
+                        </button>
+                        <button onclick="unarchiveProject('${p.id}', '${safeName}')" class="btn btn-emerald" title="Projeyi Yerel SSD'ye Geri Getir">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span>Geri Getir</span>
+                        </button>
+                        <button onclick="verifyArchive('${p.id}', '${safeName}')" class="btn btn-subtle" title="Google Drive Arşiv Bütünlüğünü Doğrula">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <span>Doğrula</span>
+                        </button>
+                        ${p.quarantine_path ? `
+                        <button onclick="purgeQuarantine('${p.id}', '${safeName}')" class="btn btn-subtle" style="color: var(--rose);" title="Karantinayı Şimdi Kalıcı Olarak Sil">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <span>Karantinayı Sil</span>
+                        </button>` : ''}
+                        <button onclick="removeProject('${p.id}', '${safeName}')" class="btn btn-subtle" style="color: var(--rose);" title="Projeyi DevDrive Korumasından Kaldır">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    `;
+                } else {
+                    actionButtonsHtml = `
+                        <button onclick="revealPath('${safePath}')" class="btn btn-subtle" title="Yerel Klasörü Finder'da Göster">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </button>
+                        <button onclick="openTreeViewer('${p.id}', '${safeName}', false)" class="btn btn-subtle" title="Dosya ve Klasör Ağacını İncele (Gezgin)">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                            <span>Dosyalar</span>
+                        </button>
+                        <button onclick="cleanArtifacts('${p.id}', '${safeName}')" class="btn btn-subtle" style="color: var(--amber);" title="Sınıf A Artifaktları Temizle (node_modules, target, .venv)">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <span>Temizle</span>
+                        </button>
+                        <button onclick="offloadProject('${p.id}', '${safeName}', ${p.reclaimable_bytes || 0})" class="btn btn-brand" title="SSD'den Boşalt & Drive'a Arşivle (7 Gün Yerel Karantina)">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>
+                            <span>Tahliye Et</span>
+                        </button>
+                        <button onclick="triggerSync('${safePath}', this, false)" class="btn ${actionBtnClass}" title="Google Drive'a Gönder / Eşitle">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>${actionBtnText}</span>
+                        </button>
+                        <button onclick="openSnapshotModal('${safePath}')" class="btn btn-subtle" title="Anlık Geri Dönüş Noktası Al">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>Snapshot</span>
+                        </button>
+                        <button onclick="cleanRemoteBackup('${p.id}', '${safeName}')" class="btn btn-subtle" style="color: var(--text-muted);" title="Google Drive'daki Bulut Yedeğini Sıfırla (Yerel dosyalara dokunmaz)">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <span>Bulut Yedeğini Sıfırla (Drive)</span>
+                        </button>
+                        <button onclick="removeProject('${p.id}', '${safeName}')" class="btn btn-subtle" style="color: var(--rose);" title="Projeyi DevDrive Korumasından Kaldır">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    `;
+                }
+
+                return `
+                <div class="item-card" style="${p.sync_status === 'syncing' ? 'border-color: rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.03);' : (isArchived ? 'border-color: rgba(56, 189, 248, 0.2); background: rgba(56, 189, 248, 0.02);' : '')}">
+                    <div class="item-info">
+                        <div class="item-title-row">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; box-shadow: 0 0 8px ${dotColor};"></span>
+                            <span class="item-title">${p.name}</span>
+                            <span class="badge-pill ${badgeClass} mono">${statusLabel}</span>
+                        </div>
+                        <div class="item-sub mono">${p.local_path}</div>
+                        ${techBadgesHtml}
+                        ${statusDetail}
+                        ${progressBarHtml}
+                    </div>
+
+                    <div class="item-actions">
+                        ${actionButtonsHtml}
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+        }
+
+        // Promise-based in-app confirmation modal (works 100% reliably in Tauri/WebKit)
+        function confirmDialog(message, title = 'Onay Gerekiyor', confirmText = 'Onayla', isDanger = false, icon = '⚠️', cancelText = 'Vazgeç') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                const titleEl = document.getElementById('confirm-title');
+                const msgEl = document.getElementById('confirm-message');
+                const okBtn = document.getElementById('confirm-ok-btn');
+                const cancelBtn = document.getElementById('confirm-cancel-btn');
+                const iconEl = document.getElementById('confirm-icon');
+
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+                okBtn.textContent = confirmText;
+                okBtn.className = isDanger ? 'btn btn-rose' : 'btn btn-brand';
+                cancelBtn.textContent = cancelText;
+                cancelBtn.style.display = 'inline-flex';
+                iconEl.textContent = icon;
+
+                modal.classList.add('open');
+
+                function cleanup(val) {
+                    modal.classList.remove('open');
+                    okBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    resolve(val);
+                }
+
+                okBtn.onclick = () => cleanup(true);
+                cancelBtn.onclick = () => cleanup(false);
+            });
+        }
+
+        // Promise-based in-app alert modal (works 100% reliably in Tauri/WebKit)
+        function alertDialog(message, title = 'Bilgilendirme', icon = 'ℹ️') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                const titleEl = document.getElementById('confirm-title');
+                const msgEl = document.getElementById('confirm-message');
+                const okBtn = document.getElementById('confirm-ok-btn');
+                const cancelBtn = document.getElementById('confirm-cancel-btn');
+                const iconEl = document.getElementById('confirm-icon');
+
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+                okBtn.textContent = 'Tamam';
+                okBtn.className = 'btn btn-brand';
+                cancelBtn.style.display = 'none';
+                iconEl.textContent = icon;
+
+                modal.classList.add('open');
+
+                function cleanup() {
+                    modal.classList.remove('open');
+                    okBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    cancelBtn.style.display = 'inline-flex';
+                    resolve(true);
+                }
+
+                okBtn.onclick = cleanup;
+            });
+        }
+
+        async function cleanArtifacts(id, name) {
+            const ok = await confirmDialog(
+                `'${name}' projesindeki Sınıf A (node_modules, target, .venv vb.) yeniden üretilebilir artifaktları temizlemek istiyor musunuz?\n\n(Kaynak kodlarınıza KESİNLİKLE dokunulmaz)`,
+                'Artifaktları Temizle',
+                'Temizle',
+                true,
+                '🧹'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch('/api/project/clean-artifacts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id, 10), dry_run: false })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Temizleme hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function offloadProject(id, name, reclaimableBytes) {
+            const formattedSpace = formatBytes(reclaimableBytes);
+            const promptMsg = `'${name}' projesini SSD'den tahliye etmek istiyor musunuz?\n\n` +
+                `• Açılacak Yerel SSD Alanı: Yaklaşık ${formattedSpace}\n` +
+                `• Değerli Kaynak Dosyaları & .git: Tam doğrulukla Google Drive'a arşivlenecektir.\n` +
+                `• 7 Günlük Güvence: Dosyalarınız yerelde 7 gün karantinada tutulur, dilediğiniz an tek tıkla geri getirebilirsiniz.\n\n` +
+                `Devam etmek için ONAYLIYOR musunuz?`;
+
+            const ok = await confirmDialog(promptMsg, `'${name}' Projesini Tahliye Et`, 'Tahliye Et', false, '📦');
+            if (!ok) return;
+
+            try {
+                showToast(`'${name}' tahliye ediliyor...`, 'info');
+                const res = await fetch('/api/project/offload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id, 10), dry_run: false, yes: true })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Tahliye hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function unarchiveProject(id, name) {
+            const rebuild = await confirmDialog(
+                `'${name}' projesini yerel diske geri getirirken bağımlılıkların (npm install, cargo build vb.) otomatik kurulmasını da ister misiniz?`,
+                'Projeyi Geri Getir',
+                'Evet, Bağımlılıkları Kur',
+                false,
+                '📥',
+                'Sadece Kodları Getir'
+            );
+            try {
+                showToast(`'${name}' geri getiriliyor...`, 'info');
+                const res = await fetch('/api/project/unarchive', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id, 10), rebuild: rebuild })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Geri getirme hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function verifyArchive(id, name) {
+            try {
+                showToast(`'${name}' arşivi doğrulanıyor...`, 'info');
+                const res = await fetch('/api/project/archive-verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id, 10) })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    await alertDialog(`✔ '${name}' Google Drive Arşivi TAM DOĞRULANDI!\n\nDoğrulanan dosya: ${data.data.verified_files}\nDoğrulanan bayt: ${formatBytes(data.data.verified_bytes)}\nManifest SHA-256 mühürlüdür.`, 'Arşiv Doğrulandı', '🛡️');
+                } else {
+                    await alertDialog(`❌ Doğrulama Başarısız: ` + data.message, 'Doğrulama Hatası', '❌');
+                }
+            } catch (e) {
+                showToast('Doğrulama hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function purgeQuarantine(id, name) {
+            const ok = await confirmDialog(
+                `DİKKAT: '${name}' projesinin yerel karantinasını kalıcı olarak silmek istiyor musunuz?\n\n(Bu işlem öncesinde Google Drive'daki arşiv otomatik olarak tam doğrulanacaktır. Doğrulama geçemezse silinmez)`,
+                'Karantinayı Sil',
+                'Kalıcı Olarak Sil',
+                true,
+                '🗑️'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch('/api/project/purge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id, 10), force: false })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Karantina silme hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function cleanRemoteBackup(id, name) {
+            const ok = await confirmDialog(
+                `DİKKAT: '${name}' projesinin Google Drive bulut yedeğini kalıcı olarak silmek üzeresiniz!\n\n(Bu işlem Mac'inizdeki yerel dosyalara KESİNLİKLE DOKUNMAZ, yalnızca Google Drive'daki yedeği sıfırlar)`,
+                'Bulut Yedeğini Sıfırla (Drive)',
+                'Drive Yedeğini Sil',
+                true,
+                '🗑️'
+            );
+            if (!ok) return;
+
+            try {
+                showToast(`'${name}' Drive yedeği temizleniyor...`, 'info');
+                const res = await fetch('/api/project/clean-remote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id, 10) })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Drive temizleme hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function removeProject(id, name) {
+            const ok = await confirmDialog(
+                `'${name}' projesini DevDrive takibinden kaldırmak istediğinize emin misiniz?\n\n(Yerel dosyalarınız kesinlikle silinmez, sadece panel takibinden çıkarılır)`,
+                'Projeyi Listeden Kaldır',
+                'Listeden Kaldır',
+                false,
+                '✕'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch('/api/project/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id, 10) })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Kaldırma hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function removeAllProjects() {
+            const ok = await confirmDialog(
+                "TÜM projeleri DevDrive takibinden kaldırmak istediğinize emin misiniz?\n\n(Bilgisayarınızdaki yerel kodlarınıza KESİNLİKLE dokunulmaz, sadece panel listesi sıfırlanır)",
+                'Tüm Listeyi Temizle',
+                'Tümünü Temizle',
+                true,
+                '⚠️'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch('/api/project/remove-all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Toplu temizleme hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function addNewProject() {
+            const pathInput = document.getElementById('new-proj-path');
+            const nameInput = document.getElementById('new-proj-name');
+            const path = pathInput.value.trim();
+            const name = nameInput.value.trim() || null;
+            if (!path) { showToast('Geçerli bir proje dizin yolu girin', 'error'); return; }
+
+            const btn = document.querySelector('#view-workspaces .btn-brand');
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<span>Korumaya Alınıyor...</span>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/init', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path, name })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    pathInput.value = '';
+                    nameInput.value = '';
+                    loadAllData();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Sunucu hatası', 'error');
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        async function triggerSync(path, btn, prune = false) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = prune ? '<span>Pruning...</span>' : '<span>Eşitleniyor...</span>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path, all: true, prune, force: false })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+            } catch (e) {
+                showToast(prune ? 'Prune hatası' : 'Eşitleme hatası', 'error');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+                loadAllData();
+            }
+        }
+
+        let remoteProjectsCache = [];
+
+        async function loadRemoteProjects(force = false) {
+            tabCache.restore = true;
+            const container = document.getElementById('remote-projects-list');
+            if (!container) return;
+            container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Drive projeleri taranıyor...</div>';
+
+            try {
+                const res = await fetch('/api/remote-projects');
+                const data = await res.json();
+                if (!data.success || !data.data || data.data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div style="font-size: 28px; margin-bottom: 8px;">☁️</div>
+                            <div style="font-weight: 600; color: #fff;">Google Drive'da Yedeklenmiş Proje Bulunamadı</div>
+                            <div style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Çalışma Alanları sekmesinden bir projeyi korumaya aldığınızda burada listelenecektir.</div>
+                        </div>
+                    `;
+                    remoteProjectsCache = [];
+                    return;
+                }
+
+                remoteProjectsCache = data.data;
+                container.innerHTML = data.data.map(p => {
+                    const originalPath = p.original_local_path || ('/Users/serhat/Desktop/' + p.name);
+                    const lastMod = p.last_modified ? new Date(p.last_modified).toLocaleString('tr-TR') : 'Bilinmiyor';
+                    
+                    return `
+                    <div class="item-card" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;">
+                        <div class="item-info">
+                            <div class="item-title-row" style="display: flex; align-items: center; gap: 8px;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 8px var(--emerald);"></span>
+                                <span class="item-title" style="font-size: 14px; font-weight: 700;">${p.name}</span>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3);">☁️ Bulutta Güvende</span>
+                            </div>
+                            <div class="mono" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                                ${p.file_count} dosya • ${formatBytes(p.total_bytes)} • Son Eşitleme: ${lastMod}
+                            </div>
+                            <div class="mono" style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                                Orijinal Konum: <span style="color: var(--brand);">${originalPath}</span>
+                            </div>
+                        </div>
+
+                        <div class="item-actions" style="display: flex; gap: 8px; align-items: center;">
+                            <button onclick="openQuickRestoreModal('${p.name}', '${originalPath}')" class="btn btn-brand" title="Projeyi tek tıkla Mac'e indir">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                <span>Mac'e İndir (Restore)</span>
+                            </button>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                if (force) showToast('Drive projeleri güncellendi', 'success');
+            } catch (e) {
+                container.innerHTML = '<div class="empty-state" style="color: var(--rose);">Drive taranırken hata oluştu</div>';
+                showToast('Uzak projeler listelenemedi', 'error');
+            }
+        }
+
+        function openQuickRestoreModal(name, defaultPath) {
+            document.getElementById('modal-restore-remote-name').value = name;
+            document.getElementById('modal-restore-title').innerText = `'${name}' Projesini Mac'e İndir`;
+            document.getElementById('modal-restore-target-path').value = defaultPath;
+            document.getElementById('modal-restore-force').checked = false;
+            document.getElementById('quick-restore-modal').classList.add('open');
+        }
+
+        function closeQuickRestoreModal() {
+            document.getElementById('quick-restore-modal').classList.remove('open');
+        }
+
+        async function submitQuickRestore() {
+            const name = document.getElementById('modal-restore-remote-name').value;
+            let targetPath = document.getElementById('modal-restore-target-path').value.trim();
+            const force = document.getElementById('modal-restore-force').checked;
+            const btn = document.getElementById('btn-submit-quick-restore');
+
+            if (!name || !targetPath) {
+                showToast('Lütfen hedef klasör yolunu girin', 'error');
+                return;
+            }
+
+            if (!targetPath.endsWith('/' + name) && !targetPath.endsWith('\\' + name)) {
+                targetPath = targetPath.replace(/[\/\\]+$/, '') + '/' + name;
+                document.getElementById('modal-restore-target-path').value = targetPath;
+            }
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<span>İndiriliyor...</span>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/restore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ remote_name: name, target_path: targetPath, force })
+                });
+                const data = await res.json();
+                if (data.success && data.data) {
+                    showToast(data.message, 'success');
+                    closeQuickRestoreModal();
+                    switchTab('workspaces');
+                    loadAllData();
+                } else {
+                    showToast(data.message || 'Geri getirme başarısız', 'error');
+                }
+            } catch (e) {
+                showToast('İndirme sırasında hata oluştu', 'error');
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        async function executeRestore() {
+            const remoteName = document.getElementById('restore-remote-select').value;
+            let targetPath = document.getElementById('restore-target-path').value.trim();
+            const force = document.getElementById('restore-force').checked;
+            const btn = document.getElementById('btn-run-restore');
+            const resBox = document.getElementById('restore-result-box');
+
+            if (!remoteName) {
+                showToast('Lütfen geri getirilecek uzak projeyi seçin', 'error');
+                return;
+            }
+            if (!targetPath) {
+                showToast('Lütfen hedef yerel klasör yolunu girin', 'error');
+                return;
+            }
+
+            // Auto-append project name if target path doesn't already end with it
+            if (remoteName && !targetPath.endsWith('/' + remoteName) && !targetPath.endsWith('\\' + remoteName)) {
+                targetPath = targetPath.replace(/[\/\\]+$/, '') + '/' + remoteName;
+                document.getElementById('restore-target-path').value = targetPath;
+            }
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<span>Geri Getiriliyor...</span>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/restore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ remote_name: remoteName, target_path: targetPath, force })
+                });
+                const data = await res.json();
+                if (data.success && data.data) {
+                    showToast(data.message, 'success');
+                    resBox.style.display = 'block';
+                    document.getElementById('restore-res-title').innerText = data.message;
+                    document.getElementById('restore-res-stats').innerText = 
+                        `Geri getirilen: ${data.data.files_restored} dosya (${formatBytes(data.data.bytes)}) • Atlanan: ${data.data.files_skipped} dosya`;
+
+                    const hintsBox = document.getElementById('restore-res-hints');
+                    hintsBox.innerHTML = '';
+                    if (data.data.hints && data.data.hints.length > 0) {
+                        for (const h of data.data.hints) {
+                            const badge = document.createElement('div');
+                            badge.style.padding = '6px 10px';
+                            badge.style.background = 'rgba(255, 255, 255, 0.04)';
+                            badge.style.border = '1px solid var(--panel-border)';
+                            badge.style.borderRadius = '8px';
+                            badge.style.fontSize = '12px';
+                            badge.style.color = '#fff';
+                            badge.innerHTML = `<span style="color: var(--amber); font-weight: bold; margin-right: 6px;">💡 İpucu:</span> ${h}`;
+                            hintsBox.appendChild(badge);
+                        }
+                    }
+                    loadAllData();
+                } else {
+                    showToast(data.message || 'Geri getirme başarısız', 'error');
+                }
+            } catch (e) {
+                showToast('Sunucu bağlantı hatası', 'error');
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        function openSnapshotModal(path) {
+            document.getElementById('snap-target-path').value = path;
+            document.getElementById('snap-message-input').value = '';
+            document.getElementById('snapshot-modal').classList.add('open');
+            document.getElementById('snap-message-input').focus();
+        }
+
+        function closeSnapshotModal() {
+            document.getElementById('snapshot-modal').classList.remove('open');
+        }
+
+        async function submitSnapshot() {
+            const path = document.getElementById('snap-target-path').value;
+            const message = document.getElementById('snap-message-input').value.trim() || 'Manuel Kontrol Noktası';
+            closeSnapshotModal();
+
+            try {
+                const res = await fetch('/api/snapshot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path, message })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                if (data.success) loadTimeline(true);
+            } catch (e) {
+                showToast('Snapshot hatası', 'error');
+            }
+        }
+
+        async function promptQuickSnapshot() {
+            const select = document.getElementById('timeline-project-select');
+            const path = select ? select.value : (currentProjects[0]?.local_path);
+            if (!path) { showToast('Önce bir proje ekleyin', 'error'); return; }
+            openSnapshotModal(path);
+        }
+
+        async function loadTimeline(force = false) {
+            if (!force && tabCache.timeline) return;
+            const select = document.getElementById('timeline-project-select');
+            const path = select?.value || currentProjects[0]?.local_path;
+            const container = document.getElementById('timeline-list');
+            if (!path) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Kayıtlı proje bulunamadı.</div>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/snapshots?path=' + encodeURIComponent(path));
+                const data = await res.json();
+                tabCache.timeline = true;
+
+                if (!data.data || data.data.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Henüz anlık görüntü kaydedilmemiş.</div>';
+                    return;
+                }
+
+                container.innerHTML = data.data.map(s => `
+                    <div class="item-card">
+                        <div class="item-info">
+                            <div class="item-title-row">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--amber);"></span>
+                                <span class="item-title">${s.message}</span>
+                            </div>
+                            <div class="item-sub mono">${s.id} • ${new Date(s.created_at).toLocaleString('tr-TR')}</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="previewDiff('${s.id}')" class="btn btn-subtle" title="Geri sarmadan önce dosya farklarını incele">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <span>Farkı Gör</span>
+                            </button>
+                            <button onclick="rollbackTo('${path}', '${s.id}')" class="btn btn-amber">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                <span>Bu Ana Dön</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<div style="text-align: center; color: var(--rose); padding: 30px;">Geçmiş yüklenemedi.</div>';
+            }
+        }
+
+        async function rollbackTo(path, snapshot_id) {
+            const ok = await confirmDialog(
+                `'${snapshot_id}' anlık görüntüsüne geri dönülsün mü?\n\nBu andan sonra yapılan değişiklikler geri alınacaktır.`,
+                'Zaman Makinesi - Geri Dön',
+                'Bu Ana Geri Dön',
+                true,
+                '⏪'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch('/api/rollback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path, snapshot_id })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Geri yükleme hatası: ' + e.message, 'error');
+            }
+        }
+
+        async function previewDiff(snapshotId) {
+            const select = document.getElementById('timeline-project-select');
+            const projectId = select.value;
+            if (!projectId) {
+                await alertDialog("Lütfen önce bir proje seçin.", "Seçim Yapılmadı", "⚠️");
+                return;
+            }
+            try {
+                const res = await fetch(`/api/snapshots/diff?snapshot_id=${encodeURIComponent(snapshotId)}&project_id=${encodeURIComponent(projectId)}`);
+                const json = await res.json();
+                if (!json.success || !json.data) {
+                    await alertDialog("Fark bilgisi alınamadı: " + (json.message || "Bilinmeyen hata"), "Hata", "❌");
+                    return;
+                }
+                const rep = json.data;
+                let summary = `📸 Snapshot: ${rep.snapshot_id} ("${rep.message}")\n\n` +
+                    `• Değişen (Modified): ${rep.modified_count} dosya\n` +
+                    `• Yerelde Eklenen / Silinecek (Added): ${rep.added_locally_count} dosya\n` +
+                    `• Yerelde Silinmiş / Geri Gelecek (Missing): ${rep.missing_locally_count} dosya\n` +
+                    `• Değişmeyen (Identical): ${rep.identical_count} dosya\n\n`;
+
+                if (rep.modified_count === 0 && rep.added_locally_count === 0 && rep.missing_locally_count === 0) {
+                    summary += "✨ Çalışma dizini seçilen an ile %100 birebir aynı!";
+                } else {
+                    summary += "Değişiklik Listesi:\n";
+                    for (const e of rep.entries) {
+                        if (e.status === 'modified') summary += `  🟡 ~ ${e.path} (değişmiş)\n`;
+                        else if (e.status === 'added_locally') summary += `  🟢 + ${e.path} (yerelde yeni, rollback ile silinecek)\n`;
+                        else if (e.status === 'missing_locally') summary += `  🔴 - ${e.path} (yerelde silinmiş, rollback ile geri gelecek)\n`;
+                    }
+                }
+                await alertDialog(summary, "Anlık Görüntü Dosya Farkı", "🔍");
+            } catch (err) {
+                await alertDialog("Fark sorgulanırken hata: " + err, "Hata", "❌");
+            }
+        }
+
+        async function purgeExpiredQuarantines() {
+            const ok = await confirmDialog(
+                "Süresi dolmuş (7 günü geçmiş) tüm karantinaları kalıcı olarak silmek istiyor musunuz?\n\n(Bu işlem öncesinde Google Drive'daki arşiv bütünlüğü otomatik doğrulanır)",
+                'Süresi Dolanları Temizle',
+                'Karantinaları Temizle',
+                true,
+                '🗑️'
+            );
+            if (!ok) return;
+
+            try {
+                showToast("Karantinalar taranıyor...", "info");
+                const res = await fetch('/api/project/purge-expired', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ force: false })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast("Temizleme sırasında hata: " + e, 'error');
+            }
+        }
+
+        async function loadVault(force = false) {
+            if (!force && tabCache.vault) return;
+            const container = document.getElementById('vault-list');
+            try {
+                const res = await fetch('/api/vault');
+                const data = await res.json();
+                tabCache.vault = true;
+
+                if (!data.data || data.data.length === 0) {
+                    container.innerHTML = `
+                        <div style="background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 32px; text-align: center;">
+                            <div style="font-weight: 700; color: #fff;">Kurtarma Kasası Boş</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Yerel projende silinen dosyalar Google Drive kasasında güvenle korunur.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.data.map(item => `
+                    <div class="item-card">
+                        <div class="item-info">
+                            <div class="item-title-row">
+                                <span class="item-title mono">${item.original_name}</span>
+                                <span class="badge-pill badge-brand mono">${formatBytes(item.size_bytes)}</span>
+                            </div>
+                            <div class="item-sub mono">Silinme Tarihi: ${item.deleted_at}</div>
+                        </div>
+                        <button onclick="restoreVaultFile('${item.full_path}', '${item.project_path}')" class="btn btn-emerald">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span>Geri Yükle</span>
+                        </button>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<div style="text-align: center; color: var(--rose); padding: 30px;">Kasa taranamadı.</div>';
+            }
+        }
+
+        async function restoreVaultFile(filePath, projectPath) {
+            try {
+                const res = await fetch('/api/vault/restore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_path: filePath, target_project_path: projectPath })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadVault(true);
+            } catch (e) {
+                showToast('Geri yükleme hatası', 'error');
+            }
+        }
+
+        function simulateProject(path) {
+            document.getElementById('sim-path').value = path;
+            switchTab('simulator');
+            runSimulator();
+        }
+
+        async function runSimulator() {
+            const path = document.getElementById('sim-path').value.trim();
+            if (!path) { showToast('Analiz için dizin yolu girin', 'error'); return; }
+
+            const btn = document.getElementById('sim-btn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span>Analiz Ediliyor...</span>';
+            btn.disabled = true;
+
+            const results = document.getElementById('sim-results');
+            results.style.display = 'flex';
+            results.innerHTML = '<div style="background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 24px; text-align: center; color: var(--text-muted);">Dev-Shield kuralları tüm dosya sistemine cerrahi olarak uygulanıyor...</div>';
+
+            try {
+                const res = await fetch('/api/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path })
+                });
+                const data = await res.json();
+                if (!data.success || !data.data) {
+                    results.innerHTML = `<div style="text-align: center; color: var(--rose); padding: 20px;">${data.message || 'Analiz başarısız oldu'}</div>`;
+                    return;
+                }
+
+                const sim = data.data;
+                results.innerHTML = `
+                    <div style="background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                            <span class="mono" style="color: var(--text-sub);">Dizin: <span style="color: #fff;">${path}</span></span>
+                            <span class="badge-pill badge-emerald mono">Doğrulandı (0 Sahte Pozitif)</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                            <div style="background: var(--card); border: 1px solid var(--card-border); padding: 12px; border-radius: 10px;">
+                                <div style="font-size: 11px; color: var(--text-muted);">Toplam Dosya</div>
+                                <div class="mono" style="font-size: 20px; font-weight: 800; color: #fff; margin-top: 2px;">${sim.total_files.toLocaleString()}</div>
+                            </div>
+                            <div style="background: var(--emerald-bg); border: 1px solid var(--emerald-border); padding: 12px; border-radius: 10px;">
+                                <div style="font-size: 11px; color: var(--emerald);">Korumaya Alınan</div>
+                                <div class="mono" style="font-size: 20px; font-weight: 800; color: #fff; margin-top: 2px;">${sim.source_files.toLocaleString()}</div>
+                                <div style="font-size: 10px; color: var(--emerald);">${formatBytes(sim.source_bytes)} Drive'a eşitlenir</div>
+                            </div>
+                            <div style="background: var(--amber-bg); border: 1px solid var(--amber-border); padding: 12px; border-radius: 10px;">
+                                <div style="font-size: 11px; color: var(--amber);">İzole Edilen Çöp</div>
+                                <div class="mono" style="font-size: 20px; font-weight: 800; color: #fff; margin-top: 2px;">${sim.ephemeral_files.toLocaleString()}</div>
+                                <div style="font-size: 10px; color: var(--amber);">${formatBytes(sim.ephemeral_bytes)} SSD'de kalır</div>
+                            </div>
+                        </div>
+
+                        <div class="sim-grid">
+                            <div class="sim-box" style="border-color: var(--emerald-border);">
+                                <div class="sim-box-title" style="color: var(--emerald);">
+                                    <span>✓ Drive'a Eşitlenecek Saf Kaynaklar</span>
+                                    <span class="mono" style="color: var(--text-muted); font-size: 10px;">${sim.sample_sources.length} dosya</span>
+                                </div>
+                                <div class="sim-file-list mono">
+                                    ${sim.sample_sources.map(s => `<div class="sim-file-item" style="color: #6ee7b7;">${s}</div>`).join('')}
+                                </div>
+                            </div>
+
+                            <div class="sim-box" style="border-color: var(--amber-border);">
+                                <div class="sim-box-title" style="color: var(--amber);">
+                                    <span>✕ Filtrelenen Ephemeral Çöpler</span>
+                                    <span class="mono" style="color: var(--text-muted); font-size: 10px;">${sim.sample_ephemerals.length} dosya</span>
+                                </div>
+                                <div class="sim-file-list mono">
+                                    ${sim.sample_ephemerals.map(e => `<div class="sim-file-item" style="color: #fcd34d;">${e}</div>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                results.innerHTML = '<div style="text-align: center; color: var(--rose); padding: 20px;">Analiz hatası oluştu</div>';
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        async function cleanCache() {
+            try {
+                const res = await fetch('/api/cache-clean', { method: 'POST' });
+                const data = await res.json();
+                showToast(data.message, 'success');
+                loadAllData();
+            } catch (e) {
+                showToast('Önbellek temizlenemedi', 'error');
+            }
+        }
+
+        async function pickFolder(targetInputId, targetNameId = null, prompt = null) {
+            try {
+                showToast('Finder klasör seçici açılıyor...', 'info');
+                const res = await fetch('/api/pick-folder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await res.json();
+                if (data.success && data.data) {
+                    let finalPath = data.data.path;
+                    if (targetInputId === 'restore-target-path') {
+                        const sel = document.getElementById('restore-remote-select');
+                        if (sel && sel.value && !finalPath.endsWith('/' + sel.value) && !finalPath.endsWith('\\' + sel.value)) {
+                            finalPath = finalPath.replace(/[\/\\]+$/, '') + '/' + sel.value;
+                        }
+                    }
+                    document.getElementById(targetInputId).value = finalPath;
+                    if (targetNameId) {
+                        const nameInput = document.getElementById(targetNameId);
+                        if (nameInput && !nameInput.value) {
+                            nameInput.value = data.data.name;
+                        }
+                    }
+                    showToast('Klasör seçildi: ' + (finalPath.split('/').pop() || data.data.name), 'success');
+                } else if (data.message && data.message.includes('iptal')) {
+                    showToast('Klasör seçimi iptal edildi', 'info');
+                }
+            } catch (e) {
+                showToast('Klasör seçilemedi', 'error');
+            }
+        }
+
+        async function loadDriveAccounts() {
+            try {
+                const res = await fetch('/api/drive/accounts');
+                const data = await res.json();
+                const select = document.getElementById('drive-account-select');
+                if (data.data && data.data.length > 0) {
+                    select.innerHTML = data.data.map(acc => `<option value="${acc.path}">${acc.email}</option>`).join('');
+                    const currentRemote = document.getElementById('cfg-remote').value;
+                    const match = data.data.find(acc => acc.path === currentRemote);
+                    if (match) {
+                        select.value = match.path;
+                    }
+                } else {
+                    select.innerHTML = '<option value="">Bağlı hesap bulunamadı</option>';
+                }
+            } catch (e) {}
+        }
+
+        function onAccountSelectChange() {
+            const select = document.getElementById('drive-account-select');
+            if (select.value) {
+                document.getElementById('cfg-remote').value = select.value;
+                showToast('Drive hedefi güncellendi', 'info');
+            }
+        }
+
+        async function testDriveConnection() {
+            const path = document.getElementById('cfg-remote').value.trim();
+            const btn = document.getElementById('test-drive-btn');
+            const badge = document.getElementById('drive-health-badge');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<span>Test ediliyor...</span>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/drive/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: path || null })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    badge.className = 'badge-pill badge-emerald mono';
+                    badge.innerText = `Bağlantı Aktif (${data.data.latency_ms} ms) ✓`;
+                    showToast(data.message, 'success');
+                } else {
+                    badge.className = 'badge-pill badge-amber mono';
+                    badge.innerText = 'Erişim Hatası';
+                    showToast(data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Bağlantı testi başarısız', 'error');
+            } finally {
+                btn.innerHTML = orig;
+                btn.disabled = false;
+            }
+        }
+
+        async function loadSettings(force = false) {
+            if (!force && tabCache.settings) return;
+            try {
+                const res = await fetch('/api/config');
+                const data = await res.json();
+                tabCache.settings = true;
+                if (data.data) {
+                    globalConfig = data.data;
+                    document.getElementById('cfg-cache').value = globalConfig.max_cache_gb;
+                    document.getElementById('cfg-cache-val').innerText = globalConfig.max_cache_gb + ' GB';
+                    document.getElementById('cfg-debounce').value = globalConfig.debounce_ms;
+                    document.getElementById('cfg-debounce-val').innerText = globalConfig.debounce_ms + ' ms';
+                    document.getElementById('cfg-remote').value = globalConfig.remote_drive_base_path;
+                    document.getElementById('cfg-autosnap').checked = globalConfig.auto_snapshot_on_sync;
+                    await loadDriveAccounts();
+                }
+            } catch (e) {
+                showToast('Yapılandırma yüklenemedi', 'error');
+            }
+        }
+
+        async function saveSettings() {
+            const max_cache_gb = parseInt(document.getElementById('cfg-cache').value, 10);
+            const debounce_ms = parseInt(document.getElementById('cfg-debounce').value, 10);
+            const remote_drive_base_path = document.getElementById('cfg-remote').value.trim();
+            const auto_snapshot_on_sync = document.getElementById('cfg-autosnap').checked;
+
+            try {
+                const res = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        max_cache_gb,
+                        debounce_ms,
+                        auto_snapshot_on_sync,
+                        remote_drive_base_path: remote_drive_base_path || null
+                    })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                loadAllData();
+            } catch (e) {
+                showToast('Kaydetme hatası', 'error');
+            }
+        }
+
+        async function revealPath(path) {
+            try {
+                await fetch('/api/reveal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path })
+                });
+            } catch (e) {}
+        }
+
+        function revealRemote() {
+            const p = document.getElementById('cloud-path').innerText.trim();
+            revealPath(p);
+        }
+
+        function forceRefreshAll() {
+            tabCache.timeline = false;
+            tabCache.vault = false;
+            tabCache.settings = false;
+            loadAllData();
+            const activeTab = document.querySelector('.tab-btn.active')?.id.replace('tab-', '');
+            if (activeTab === 'timeline') loadTimeline(true);
+            if (activeTab === 'vault') loadVault(true);
+            if (activeTab === 'settings') loadSettings(true);
+            showToast('Tüm veriler tazelendi', 'info');
+        }
+
+        // Tree Viewer State & Logic
+        let currentTreeData = null;
+        let currentTreeProjectId = null;
+        let currentTreeProjectName = '';
+
+        async function openTreeViewer(projectId, projectName, isArchived) {
+            currentTreeProjectId = projectId;
+            currentTreeProjectName = projectName;
+            const drawer = document.getElementById('tree-drawer');
+            const titleEl = document.getElementById('tree-project-title');
+            const statsEl = document.getElementById('tree-project-stats');
+            const contentEl = document.getElementById('tree-content');
+            const searchInput = document.getElementById('tree-search-input');
+
+            searchInput.value = '';
+            titleEl.textContent = projectName;
+            statsEl.textContent = 'Dosya ağacı taranıyor...';
+            contentEl.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px;">Dosya ağacı yükleniyor...</div>';
+            drawer.classList.add('open');
+
+            try {
+                const res = await fetch(`/api/project/tree?project_id=${projectId}`);
+                const data = await res.json();
+                if (data.success && data.data) {
+                    currentTreeData = data.data;
+                    statsEl.textContent = `${data.data.total_files} dosya • ${formatBytes(data.data.total_bytes)} • ${data.data.is_archived ? '💤 Bulut Arşivi' : '🟢 Yerel SSD'}`;
+                    renderTreeNodes('');
+                } else {
+                    contentEl.innerHTML = `<div style="text-align: center; color: var(--rose); padding: 40px;">Hata: ${data.message || 'Ağaç yüklenemedi'}</div>`;
+                }
+            } catch (e) {
+                contentEl.innerHTML = `<div style="text-align: center; color: var(--rose); padding: 40px;">Sunucuya bağlanılamadı.</div>`;
+            }
+        }
+
+        function closeTreeViewer() {
+            const drawer = document.getElementById('tree-drawer');
+            if (drawer) drawer.classList.remove('open');
+        }
+
+        function filterTreeNodes() {
+            const val = document.getElementById('tree-search-input').value.trim().toLowerCase();
+            renderTreeNodes(val);
+        }
+
+        function getFileIcon(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            if (['ts', 'tsx'].includes(ext)) return '<span style="color: #60a5fa;">📄</span>';
+            if (['js', 'jsx', 'mjs'].includes(ext)) return '<span style="color: #facc15;">📄</span>';
+            if (['rs'].includes(ext)) return '<span style="color: #fb923c;">🦀</span>';
+            if (['dart'].includes(ext)) return '<span style="color: #22d3ee;">📱</span>';
+            if (['py'].includes(ext)) return '<span style="color: #4ade80;">🐍</span>';
+            if (['json', 'toml', 'yaml', 'yml'].includes(ext)) return '<span style="color: #fcd34d;">⚙️</span>';
+            if (['md', 'txt'].includes(ext)) return '<span style="color: #cbd5e1;">📝</span>';
+            if (['png', 'jpg', 'jpeg', 'svg', 'ico', 'car'].includes(ext)) return '<span style="color: #f472b6;">🖼️</span>';
+            if (['lock'].includes(ext)) return '<span style="color: #e2e8f0;">🔒</span>';
+            return '<span style="color: #94a3b8;">📄</span>';
+        }
+
+        function renderTreeNodes(filterText) {
+            const contentEl = document.getElementById('tree-content');
+            if (!currentTreeData || !currentTreeData.root) {
+                contentEl.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px;">Hiç dosya bulunamadı.</div>';
+                return;
+            }
+
+            function buildHtml(node, depth = 0) {
+                if (!node) return '';
+                if (!node.is_dir) {
+                    if (filterText && !node.name.toLowerCase().includes(filterText) && !node.path.toLowerCase().includes(filterText)) {
+                        return '';
+                    }
+                    const icon = getFileIcon(node.name);
+                    return `
+                        <div class="tree-item-row" style="padding-left: ${depth * 14 + 6}px;">
+                            <div class="tree-item-left">
+                                ${icon}
+                                <span style="color: #cbd5e1;">${node.name}</span>
+                            </div>
+                            <div class="tree-item-right">
+                                <span style="color: var(--text-muted); font-size: 11px;">${formatBytes(node.size_bytes)}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Directory node
+                const childMatches = (node.children || []).map(c => buildHtml(c, depth + 1)).filter(h => h.length > 0);
+                const hasMatch = childMatches.length > 0;
+                if (filterText && !hasMatch && !node.name.toLowerCase().includes(filterText)) {
+                    return '';
+                }
+
+                const safeSubPath = (node.path || '').replace(/'/g, "\\'");
+                const safeNodeName = (node.name || '').replace(/'/g, "\\'");
+                const id = 'tree-dir-' + Math.random().toString(36).substring(2, 9);
+                const isAutoExpanded = filterText.length > 0 || depth === 0;
+
+                return `
+                    <div>
+                        <div class="tree-item-row" onclick="toggleTreeDir('${id}', this)" style="padding-left: ${depth * 14 + 6}px;">
+                            <div class="tree-item-left">
+                                <span class="tree-chevron" style="display: inline-block; width: 12px; font-size: 9px; color: var(--text-muted); transition: transform 0.15s ease; transform: ${isAutoExpanded ? 'rotate(90deg)' : 'rotate(0deg)'};">▶</span>
+                                <span style="font-size: 13px;">📁</span>
+                                <span style="font-weight: 600; color: #f8fafc;">${node.name}</span>
+                            </div>
+                            <div class="tree-item-right">
+                                <button class="tree-export-btn" onclick="event.stopPropagation(); exportSubfolder(currentTreeProjectId, '${safeSubPath}', '${safeNodeName}')" title="Bu klasörü dışa aktar">📥 Çıkar</button>
+                                <span style="color: var(--text-muted); font-size: 11px;">${formatBytes(node.size_bytes)}</span>
+                            </div>
+                        </div>
+                        <div id="${id}" class="tree-children ${isAutoExpanded ? '' : 'collapsed'}">
+                            ${childMatches.join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            const childrenHtml = (currentTreeData.root.children || []).map(c => buildHtml(c, 0)).filter(h => h.length > 0).join('');
+            contentEl.innerHTML = childrenHtml || '<div style="text-align: center; color: var(--text-muted); padding: 40px;">Eşleşen dosya bulunamadı.</div>';
+        }
+
+        function toggleTreeDir(id, rowEl) {
+            const target = document.getElementById(id);
+            if (!target) return;
+            const chevron = rowEl.querySelector('.tree-chevron');
+            if (target.classList.contains('collapsed')) {
+                target.classList.remove('collapsed');
+                if (chevron) chevron.style.transform = 'rotate(90deg)';
+            } else {
+                target.classList.add('collapsed');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        async function exportSubfolder(projectId, subfolder, defaultName) {
+            const safeName = (defaultName || currentTreeProjectName || 'Modul').replace(/[^a-zA-Z0-9_-]/g, '_');
+            const defaultTarget = `/Users/serhat/Desktop/${safeName}`;
+            const targetPath = prompt(`"${defaultName || 'Tüm Proje'}" nereye çıkarılsın?\n(Varsayılan: ${defaultTarget})`, defaultTarget);
+            if (!targetPath) return;
+
+            showToast('Modül dışa aktarılıyor...', 'info');
+            try {
+                const res = await fetch('/api/project/export-subfolder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_id: parseInt(projectId),
+                        subfolder: subfolder || '',
+                        target_path: targetPath.trim()
+                    })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+            } catch (e) {
+                showToast('Dışa aktarma hatası: ' + e.message, 'error');
+            }
+        }
+
+        // Keyboard shortcuts
+        window.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
+                e.preventDefault();
+                forceRefreshAll();
+            }
+            if (e.key === 'Escape') {
+                closeSnapshotModal();
+                closeTreeViewer();
+            }
+        });
+
+
+        // Instant initialization
+        window.onload = () => {
+            loadAllData();
+        };
+    </script>
+</body>
+</html>
